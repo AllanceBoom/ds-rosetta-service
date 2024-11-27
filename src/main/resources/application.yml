@@ -1,0 +1,60 @@
+# 服务器配置
+server:
+  # 应用服务端口号
+  port: 997
+
+# Spring相关配置
+spring:
+  # 数据库连接配置
+  datasource:
+    # 数据库连接URL
+    # useUnicode=true: 使用Unicode字符集
+    # characterEncoding=utf-8: 字符编码使用UTF-8
+    # serverTimezone: 服务器时区设置为上海
+    url: jdbc:mysql://localhost:3306/your_database?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    # 数据库用户名
+    username: root
+    # 数据库密码
+    password:
+    # MySQL驱动类名
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  # JPA配置
+  jpa:
+    hibernate:
+      # 数据库表结构更新策略
+      # update: 如果表不存在则创建，如果表结构变更则更新
+      ddl-auto: update
+      # 添加物理命名策略配置
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    # 是否显示SQL语句
+    show-sql: true
+    properties:
+      hibernate:
+        # 格式化SQL输出
+        format_sql: true
+        # 确保表名和列名使用指定的大小写
+        globally_quoted_identifiers: true
+    # 指定数据库方言
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+# SSH连接配置
+ssh:
+  # SSH服务器主机地址
+  host: your-centos-host
+  # SSH服务器端口号（默认22）
+  port: 22
+  # SSH登录用户名
+  username:
+  # SSH登录密码
+  password:
+  # Rosetta程序在远程服务器上的安装路径
+  rosetta-path: /path/to/rosetta
+
+# JWT配置
+jwt:
+  # JWT密钥
+  secret:
+  # Token过期时间（秒）
+  expiration: 86400
