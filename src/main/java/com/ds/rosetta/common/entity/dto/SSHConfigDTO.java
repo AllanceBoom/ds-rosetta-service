@@ -1,6 +1,8 @@
 package com.ds.rosetta.common.entity.dto;
 
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 /**
  * SSH连接配置数据传输对象
@@ -10,6 +12,8 @@ import lombok.Data;
  * @since 1.0.0
  */
 @Data
+@Component
+@ConfigurationProperties(value = "ssh")
 public class SSHConfigDTO {
     /**
      * SSH服务器主机地址
