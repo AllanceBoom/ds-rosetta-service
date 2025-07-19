@@ -1,33 +1,57 @@
-# 使用OpenJDK 8作为基础镜像
-FROM openjdk:8-jre-slim
+# 使用Python 3.9作为基础镜像
+FROM python:3.9-slim
 
 # 设置工作目录
 WORKDIR /app
 
-# 创建应用用户
-RUN groupadd -r edms && useradd -r -g edms edms
+# 设置环境变量
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# 安装必要的工具
-RUN apt-get update && apt-get install -y \
-    curl \
+# 安装系统依赖
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        postgresql-client \
+        build-essential \
+        libpq-dev \
+        curl \
+        git \
+        libhdf5-dev \
+        pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# 复制Maven构建的jar文件
-COPY target/experimental-data-management-system-*.jar app.jar
+# 创建应用用户
+RUN groupadd -r lfrs && useradd -r -g lfrs lfrs
 
-# 创建日志和上传目录
-RUN mkdir -p /app/logs /app/uploads && \
-    chown -R edms:edms /app
+# 复制requirements文件
+COPY requirements.txt .
+
+# 安装Python依赖
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+# 复制项目文件
+COPY . .
+
+# 创建必要的目录
+RUN mkdir -p /app/logs /app/media /app/staticfiles \
+    && chown -R lfrs:lfrs /app
+
+# 收集静态文件
+RUN python manage.py collectstatic --noinput
 
 # 切换到应用用户
-USER edms
+USER lfrs
 
 # 暴露端口
-EXPOSE 8080
+EXPOSE 8000
 
 # 健康检查
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:8080/api/actuator/health || exit 1
+  CMD curl -f http://localhost:8000/api/health/ || exit 1
 
-# 启动应用
-ENTRYPOINT ["java", "-Djava.security.egd=file:/dev/./urandom", "-jar", "app.jar"]
+# 启动脚本
+COPY --chown=lfrs:lfrs docker-entrypoint.sh /app/
+RUN chmod +x /app/docker-entrypoint.sh
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
