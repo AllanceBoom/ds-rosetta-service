@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# 等待数据库启动
-echo "等待数据库启动..."
+# 等待MySQL数据库启动
+echo "等待MySQL数据库启动..."
 while ! nc -z $DB_HOST $DB_PORT; do
   sleep 0.1
 done
-echo "数据库已启动"
+echo "MySQL数据库已启动"
 
 # 运行数据库迁移
 echo "运行数据库迁移..."

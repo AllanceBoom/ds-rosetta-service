@@ -1,267 +1,180 @@
 # 肝纤维化研究数据管理系统
-# Liver Fibrosis Research Data Management System
 
-## 项目简介
+基于Python和Django的肝纤维化研究数据管理系统，专门用于GALECTIN-3靶向抗体治疗的数据分析。
 
-肝纤维化研究数据管理系统是专门为肝纤维化研究设计的综合性数据管理平台，特别针对GALECTIN-3靶向抗体治疗的实验数据分析和管理。系统集成了强大的数据分析功能，支持pandas和numpy进行深度统计分析。
-
-## 研究背景
-
-- **研究领域**: 肝纤维化治疗
-- **治疗方法**: 靶向GALECTIN-3的抗体治疗
-- **研究目标**: 评估抗体治疗对肝纤维化的疗效
-- **数据类型**: 实验数据、生物标志物、影像学数据、临床指标
-
-## 功能特性
-
-### 🔬 实验数据管理
-- 实验设计管理
-- 样本信息追踪
-- 实验结果记录
-- 数据版本控制
-
-### 📊 数据分析功能
-- **统计分析**: 基于pandas的数据处理
-- **数值计算**: numpy支持的高性能计算
-- **可视化**: matplotlib, seaborn, plotly图表
-- **机器学习**: scikit-learn支持的预测模型
-
-### 🧬 生物标志物分析
-- GALECTIN-3表达水平分析
-- 纤维化标志物监测
-- 炎症因子检测结果
-- 肝功能指标评估
-
-### 📈 疗效评估
-- 治疗前后对比分析
-- 剂量-效应关系
-- 时间序列分析
-- 生存分析
-
-### 🔐 数据安全
-- 用户权限管理
-- 数据加密存储
-- 审计日志
-- 合规性支持
+## 特点
+- 🐍 Python后端 (Django + DRF)
+- ⚛️ React前端
+- 📊 pandas + numpy数据分析
+- 🧬 GALECTIN-3专项分析
+- 📈 机器学习预测
+- 🔬 医学数据处理
+- 🗄️ MySQL数据库
 
 ## 技术栈
+- **Backend**: Django, pandas, numpy, scikit-learn
+- **Frontend**: React, TypeScript, Ant Design
+- **Database**: MySQL 8.0
+- **Cache**: Redis
+- **Analysis**: Jupyter Notebooks
+- **Deploy**: Docker + Docker Compose
 
-### 后端 (Python)
-- **框架**: Django 4.2 / FastAPI
-- **数据库**: PostgreSQL
-- **数据分析**: pandas, numpy, scipy
-- **可视化**: matplotlib, seaborn, plotly
-- **机器学习**: scikit-learn, tensorflow
-- **统计分析**: statsmodels
-
-### 前端
-- **框架**: React 18 + TypeScript
-- **UI组件**: Ant Design
-- **图表**: ECharts, D3.js
-- **状态管理**: Redux Toolkit
-
-### 数据存储
-- **关系数据库**: PostgreSQL
-- **文件存储**: MinIO / AWS S3
-- **缓存**: Redis
-- **搜索**: Elasticsearch
-
-## 项目结构
-
-```
-liver-fibrosis-research-system/
-├── backend/                    # Python后端
-│   ├── apps/                   # Django应用
-│   │   ├── authentication/    # 用户认证
-│   │   ├── experiments/        # 实验管理
-│   │   ├── samples/           # 样本管理
-│   │   ├── biomarkers/        # 生物标志物
-│   │   ├── analysis/          # 数据分析
-│   │   └── reports/           # 报告生成
-│   ├── core/                  # 核心配置
-│   ├── data_analysis/         # 数据分析模块
-│   │   ├── galectin3/        # GALECTIN-3分析
-│   │   ├── fibrosis/         # 纤维化分析
-│   │   ├── statistics/       # 统计分析
-│   │   └── visualization/    # 可视化
-│   ├── ml_models/            # 机器学习模型
-│   └── requirements.txt
-├── frontend/                  # React前端
-│   ├── src/
-│   │   ├── components/       # 组件
-│   │   ├── pages/           # 页面
-│   │   ├── services/        # API服务
-│   │   ├── utils/           # 工具函数
-│   │   └── types/           # 类型定义
-│   └── package.json
-├── data/                     # 数据目录
-│   ├── raw/                 # 原始数据
-│   ├── processed/           # 处理后数据
-│   └── exports/             # 导出数据
-├── notebooks/               # Jupyter笔记本
-│   ├── exploratory/        # 探索性分析
-│   ├── galectin3_analysis/ # GALECTIN-3分析
-│   └── reports/            # 分析报告
-├── docs/                    # 文档
-├── docker/                  # Docker配置
-└── scripts/                 # 脚本文件
-```
-
-## 核心分析模块
-
-### GALECTIN-3分析
-- 表达水平定量分析
-- 时间序列变化趋势
-- 与治疗效果的相关性分析
-- 预后预测模型
-
-### 肝纤维化评估
-- 纤维化分期评估
-- 纤维化标志物分析
-- 影像学数据处理
-- 病理学评分
-
-### 统计分析
-- 描述性统计
-- 假设检验
-- 方差分析
-- 回归分析
-- 生存分析
+## 环境要求
+- Python 3.9+
+- Node.js 16+
+- MySQL 8.0+
+- Redis 6+
 
 ## 快速开始
 
-### 环境要求
-- Python 3.9+
-- Node.js 16+
-- PostgreSQL 13+
-- Redis 6+
-
-### 安装步骤
-
-1. 克隆项目
+### 方式一：Docker部署（推荐）
 ```bash
+# 克隆项目
 git clone <repository-url>
 cd liver-fibrosis-research-system
+
+# 启动所有服务
+docker-compose up -d
+
+# 访问应用
+# 前端: http://localhost:3000
+# 后端API: http://localhost:8000
+# 管理后台: http://localhost:8000/admin
+# Jupyter: http://localhost:8888 (token: liver-fibrosis-research)
 ```
 
-2. 设置Python环境
+### 方式二：本地开发
 ```bash
+# 1. 安装MySQL并创建数据库
+mysql -u root -p
+CREATE DATABASE liver_fibrosis_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+# 2. 安装后端依赖
 cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-```
 
-3. 配置数据库
-```bash
+# 3. 配置环境变量（可选）
+export DB_NAME=liver_fibrosis_db
+export DB_USER=root
+export DB_PASSWORD=your_password
+export DB_HOST=localhost
+export DB_PORT=3306
+
+# 4. 运行数据库迁移
 python manage.py migrate
+
+# 5. 创建超级用户
 python manage.py createsuperuser
-```
 
-4. 启动后端服务
-```bash
+# 6. 启动服务
 python manage.py runserver
-```
 
-5. 安装前端依赖
-```bash
-cd ../frontend
+# 7. 安装前端依赖（另一个终端）
+cd frontend
 npm install
 npm start
 ```
 
-### 访问地址
-- 前端应用: http://localhost:3000
-- 后端API: http://localhost:8000
-- 管理后台: http://localhost:8000/admin
-- API文档: http://localhost:8000/docs
+## 核心功能
 
-## 数据分析示例
+### 🧬 GALECTIN-3分析
+- 表达水平定量分析
+- 治疗前后对比
+- 与纤维化程度相关性
+- 时间序列变化趋势
+- 剂量-效应分析
 
-### GALECTIN-3表达分析
-```python
-import pandas as pd
-import numpy as np
-from data_analysis.galectin3 import Galectin3Analyzer
+### 📊 统计分析
+- t检验、Mann-Whitney U检验
+- 相关性分析（Pearson、Spearman）
+- 线性回归和多元回归
+- 生存分析（Kaplan-Meier）
+- 方差分析（ANOVA）
 
-# 加载实验数据
-analyzer = Galectin3Analyzer()
-data = analyzer.load_experiment_data(experiment_id=123)
+### 🤖 机器学习
+- 随机森林回归
+- 特征重要性分析
+- 预测模型构建
+- 交叉验证
+- 模型评估
 
-# 分析GALECTIN-3表达水平
-expression_levels = analyzer.analyze_expression(data)
-correlation = analyzer.correlate_with_fibrosis(expression_levels)
+### 📈 数据可视化
+- matplotlib、seaborn静态图表
+- plotly交互式图表
+- 医学专用图表类型
+- 实时数据监控
 
-# 生成可视化图表
-analyzer.plot_expression_trends()
-analyzer.plot_dose_response()
-```
+## 数据库结构
 
-### 疗效评估分析
-```python
-from data_analysis.statistics import EffectivenessAnalyzer
+系统使用MySQL 8.0，主要包含以下核心表：
+- **用户管理**: Django默认用户表
+- **实验数据**: 实验设计、样本信息
+- **生物标志物**: GALECTIN-3等标志物数据
+- **纤维化分期**: F0-F4分期数据
+- **治疗组信息**: 对照组、治疗组、安慰剂组
+- **分析结果**: 统计分析和ML模型结果
 
-analyzer = EffectivenessAnalyzer()
+## API文档
 
-# 治疗前后对比
-before_after = analyzer.compare_before_after_treatment()
-
-# 剂量-效应分析
-dose_response = analyzer.analyze_dose_response()
-
-# 生存分析
-survival_analysis = analyzer.survival_analysis()
-```
+启动服务后访问：
+- Swagger UI: http://localhost:8000/api/docs/
+- ReDoc: http://localhost:8000/api/redoc/
 
 ## 开发指南
 
 ### 代码规范
-- 遵循PEP 8 Python代码规范
-- 使用Black代码格式化
-- 使用flake8代码检查
-- 前端遵循ESLint规范
+- Python: PEP 8, Black格式化
+- JavaScript/TypeScript: ESLint + Prettier
+- 提交信息: Conventional Commits
 
 ### 测试
 ```bash
 # 后端测试
+cd backend
 python manage.py test
 
 # 前端测试
+cd frontend
 npm test
 ```
 
-### 数据分析最佳实践
-1. 数据预处理标准化
-2. 统计检验的假设验证
-3. 多重比较校正
-4. 结果可重现性验证
+### 数据分析
+使用Jupyter Notebooks进行数据分析：
+```bash
+# 启动Jupyter
+jupyter notebook notebooks/
+
+# 或使用Docker
+docker-compose exec jupyter jupyter notebook --ip=0.0.0.0 --port=8888
+```
 
 ## 部署
 
-### Docker部署
+### 生产环境部署
+1. 配置环境变量
+2. 设置SSL证书
+3. 配置域名和反向代理
+4. 启用监控和日志
+
 ```bash
-docker-compose up -d
+# 生产环境启动
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 ```
-
-### 生产环境配置
-- 数据库优化
-- 缓存配置
-- 负载均衡
-- 监控告警
-
-## 许可证
-
-本项目采用 MIT 许可证
 
 ## 贡献指南
 
-1. Fork 项目
-2. 创建功能分支
-3. 提交更改
-4. 创建 Pull Request
+1. Fork项目
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 创建Pull Request
 
-## 联系方式
+## 许可证
 
-- 项目维护者: 肝纤维化研究团队
-- 邮箱: research@liver-fibrosis.com
-- 技术支持: support@liver-fibrosis.com
+本项目采用MIT许可证 - 查看 [LICENSE](LICENSE) 文件了解详情
+
+## 支持
+
+- 📧 技术支持: support@liver-fibrosis.com
+- 📖 文档: 查看 `docs/` 目录
+- 🐛 问题反馈: 创建GitHub Issue

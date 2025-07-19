@@ -11,13 +11,14 @@ ENV PYTHONUNBUFFERED=1
 # 安装系统依赖
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        postgresql-client \
+        default-mysql-client \
+        default-libmysqlclient-dev \
         build-essential \
-        libpq-dev \
+        pkg-config \
         curl \
         git \
         libhdf5-dev \
-        pkg-config \
+        netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
 # 创建应用用户
