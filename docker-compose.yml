@@ -1,0 +1,203 @@
+version: '3.8'
+
+services:
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: lfrs-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: liver_fibrosis_db
+      MYSQL_USER: lfrs_user
+      MYSQL_PASSWORD: lfrs_password
+      MYSQL_CHARACTER_SET_SERVER: utf8mb4
+      MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - lfrs-network
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: lfrs-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - lfrs-network
+
+  # Elasticsearch搜索引擎
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: lfrs-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - lfrs-network
+
+  # Jupyter Notebook服务
+  jupyter:
+    build:
+      context: ./docker/jupyter
+      dockerfile: Dockerfile
+    container_name: lfrs-jupyter
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jovyan/notebooks
+      - ./data:/home/jovyan/data
+      - ./backend:/home/jovyan/backend
+    environment:
+      - JUPYTER_TOKEN=liver-fibrosis-research
+    networks:
+      - lfrs-network
+
+  # 后端Django应用
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lfrs-backend
+    restart: unless-stopped
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=liver-fibrosis-production-secret-key-2024
+      - DB_NAME=liver_fibrosis_db
+      - DB_USER=lfrs_user
+      - DB_PASSWORD=lfrs_password
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    volumes:
+      - media_data:/app/media
+      - static_data:/app/staticfiles
+      - logs_data:/app/logs
+    depends_on:
+      - mysql
+      - redis
+      - elasticsearch
+    networks:
+      - lfrs-network
+
+  # Celery工作进程
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lfrs-celery
+    restart: unless-stopped
+    command: celery -A core worker -l info
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=liver-fibrosis-production-secret-key-2024
+      - DB_NAME=liver_fibrosis_db
+      - DB_USER=lfrs_user
+      - DB_PASSWORD=lfrs_password
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - media_data:/app/media
+      - logs_data:/app/logs
+    depends_on:
+      - mysql
+      - redis
+      - backend
+    networks:
+      - lfrs-network
+
+  # Celery Beat调度器
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lfrs-celery-beat
+    restart: unless-stopped
+    command: celery -A core beat -l info
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=liver-fibrosis-production-secret-key-2024
+      - DB_NAME=liver_fibrosis_db
+      - DB_USER=lfrs_user
+      - DB_PASSWORD=lfrs_password
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - REDIS_URL=redis://redis:6379/1
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - logs_data:/app/logs
+    depends_on:
+      - mysql
+      - redis
+      - backend
+    networks:
+      - lfrs-network
+
+  # 前端React应用
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lfrs-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - lfrs-network
+
+  # Nginx反向代理
+  nginx:
+    image: nginx:alpine
+    container_name: lfrs-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - static_data:/var/www/static
+      - media_data:/var/www/media
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - lfrs-network
+
+volumes:
+  mysql_data:
+  redis_data:
+  elasticsearch_data:
+  media_data:
+  static_data:
+  logs_data:
+
+networks:
+  lfrs-network:
+    driver: bridge
